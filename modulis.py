@@ -86,3 +86,59 @@ class Txtreader:
         maximumas = self.maksimalusP()
         ats = maximumas / 1000 * 100
         return ats
+    
+
+
+
+class Mokinys():
+    def __init__(self, vardas , pavarde , pazymiai):
+        self.vardas = vardas
+        self.pavarde = pavarde
+        self.pazymiai = pazymiai
+
+    def vidurkisf(self):
+        vidurkis = sum(self.pazymiai) / len(self.pazymiai)
+        return vidurkis
+    
+    def didziausiaspazymysf(self):
+        dickis = min(self.pazymiai)
+        return dickis
+    
+    def maizausiaspazymysf(self):
+        mazius = max(self.pazymiai)
+        return mazius    
+    
+class Abiturientas(Mokinys):
+    def __init__(self, vardas , pavarde , pazymiai , egzaminas):
+        super().__init__(vardas , pavarde , pazymiai)
+        self.egzaminas = egzaminas
+
+    def vidurkissuegzaminuf(self):
+        pazymiaisuegazimu = self.pazymiai + self.egzaminas
+        # self.pazymiaisuegzaminu = pazymiaisuegazimu
+        vidurkissuegzaminu = sum(pazymiaisuegazimu) / len(pazymiaisuegazimu)
+        return vidurkissuegzaminu
+
+class Mokykla():
+    def __init__(self):
+        self.Mokiniai = []
+
+    def addmokinys(self, mokinys):
+        self.Mokiniai.append(mokinys)
+    
+    def removeMokinys(self, mokinys):
+        self.Mokiniai.remove(mokinys)
+
+    def VisumokiniuVidurkis(self):
+        VisumokiniuPazymiai = []
+        for mokinys in self.Mokiniai:
+            VisumokiniuPazymiai.extend(mokinys.pazymiai)
+        VisumokiniuVidurkis = sum(VisumokiniuPazymiai) / len(VisumokiniuPazymiai)
+        return VisumokiniuVidurkis
+    
+mokinys = Mokinys("Mantvydas" , "Vorobjovas" , [7,8,9,10,7,4,9])
+mokinys2 = Mokinys("Vardenis2" , "Pavardenis2" , [7,8,9,10,7,4,9])
+mokinys3 = Mokinys("Vardenis3" , "Pavardenis3" , [7,2,5,10,7,4,5])
+
+abiturientas = Abiturientas("Mantvydas" , "Vorobjovas" , [7,8,9,5],[6,9])
+
