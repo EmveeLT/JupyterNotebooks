@@ -19,10 +19,23 @@ opcijos.add_argument('--incognito')
 # driver = uc.Chrome(options=opcijos)
 driver = webdriver.Chrome(options=opcijos)
 
-VisiSkelbimai = []
+#surinkite iš puslapių nuo 2 iki 11-to butų skelbimus ir tokią informaciją - kaina, kaina už 1 kv metrą, adresas, plotas, kambarių kiekis. 
+# šiuos duomenis eksportuokite į csv failą, skirtukas turi būti ;.
+#suraskite, kiek iš atrinktų butų buvo pagal kainą pigūs, brangūs, neįperkami. Kriterijus - 1 kv metro kaina iki 1 VDu - pigūs, iki 3 VDU - brangūs, daugiau nei 3 VDU - neįperkami.
+#pavaizduokite su boxplotais kainų už 1 kv pasiskirstymą nuo kambarių skaičiaus.
+#Pavaizduokiet tokią informaciją: atrinktų butų kainų pasiskirstymą tarp miestų.
+#pavaizduokite tokią informaciją - kiek buvo sklebimų per skirtingus miestus jūsų atrankoje?
+
+
+Adresas = []
+Kaina = []
+Kaina_uz_m2 = []
+Plotas = []
+Kambariu_skaicius = []
+
 # puslapiai = [2,3,4,5,6,7,8,9,10,11]
 
-for puslapis in range(2,3):
+for puslapis in range(2,11):
     url = f"https://www.aruodas.lt/butai/puslapis/{puslapis}/"
     driver.get(url)
     time.sleep(15)
@@ -42,65 +55,36 @@ for puslapis in range(2,3):
                 for i in tekstas:
                     f = f + str(i).strip() # str - kad garantuotai būtų tekstas
                 adresas = f.replace('<br/>', ', ')
-                VisiSkelbimai.append(adresas)
+                Adresas.append(adresas)
 
                 kainaRaw = addres_element.find("div" ,{"class" :"price"}).find('span', {'class':'list-item-price-v2'})
                 kainaInt = kainaRaw.text.strip().replace("\n", "").replace(" ", "").replace("€", "")
                 kainaInt2 = int(kainaInt)
-                VisiSkelbimai.append(kainaInt2)
+                Kaina.append(kainaInt2)
 
                 kainaUzM2 = addres_element.find("div" ,{"class" :"price"}).find('span', {'class':'price-pm-v2'})
                 kainaUzM2Int = kainaUzM2.text.strip().replace("\n", "").replace(" ", "").replace("€/m²", "")
                 kainaUzM2Int2 = int(kainaUzM2Int)
-                VisiSkelbimai.append(kainaUzM2Int2)
+                Kaina_uz_m2.append(kainaUzM2Int2)
 
 
                 plotas = skelbimas.find("div" ,{"class" :"list-AreaOverall-v2 list-detail-v2"})
                 plotastext = plotas.text.strip().replace("\n", "").replace(" ", "")
                 plotasFloat = float(plotastext)
-                VisiSkelbimai.append(plotasFloat)
-                print(kainaInt2, adresas ,kainaUzM2Int2 , plotasFloat ,"SKELBIMAI")
-                print(VisiSkelbimai)
+                Plotas.append(plotasFloat)
+
+
+                kambariai = skelbimas.find('div', {'class':'list-RoomNum-v2 list-detail-v2'})
+                kambariaiTxt= kambariai.text.strip() #replace("\n", "").replace(" ", "")
+                kambariaiFloat = float(kambariaiTxt)
+                Kambariu_skaicius.append(kambariaiFloat)
+               
+                print(kainaInt2, adresas ,kainaUzM2Int2 , plotasFloat , kambariaiFloat , "=============SKELBIMAI===============")
             except Exception as klaida:
-               print(klaida)
+               print(klaida)  
 
-#             kambariai = addres_element.find("div" ,{"class" :"price"}).find('div', {'class':'list-RoomNum-v2 list-detail-v2'})
-#             kambariaiINT = kambariai.text.strip().replace("\n", "").replace(" ", "").replace("€/m²", "")
-#             kambariaiInt2 = int(kambariaiINT)
-#             VisiSkelbimai.append(kambariaiInt2)
-        
-#             print(VisiSkelbimai)
-#         except Exception as klaida:
-#             print(klaida)
-#         pass
-    
-# driver.close()
+driver.close()
 
 
-        
-# dfSarasas = pd.DataFrame(data=data)
-# dfSarasas.to_csv('20240419 darbai.csv', sep=';'
-
-
-# Aruodas = pd.read_csv('20240419 darbai.csv')   
-# print(KaunoDiena)
-
-# dfSarasas = pd.DataFrame()
-# dfSarasas['Pavadinimas'] = sarasas
-# dfSarasas.to_csv('20240419 darbai.csv', sep=';')
-
-
-# def skaiciuotZodzius(pavadinimas):
-#     return len(pavadinimas.split())
-# dfSarasas["žodžių_kiekis"] = dfSarasas["Pavadinimas"].apply(skaiciuotZodzius)
-# dfSarasas.to_csv('20240419 darbai.csv', sep=';')
-
-
-
-
-#surinkite iš puslapių nuo 2 iki 11-to butų skelbimus ir tokią informaciją - kaina, kaina už 1 kv metrą, adresas, plotas, kambarių kiekis. 
-# šiuos duomenis eksportuokite į csv failą, skirtukas turi būti ;.
-#suraskite, kiek iš atrinktų butų buvo pagal kainą pigūs, brangūs, neįperkami. Kriterijus - 1 kv metro kaina iki 1 VDu - pigūs, iki 3 VDU - brangūs, daugiau nei 3 VDU - neįperkami.
-#pavaizduokite su boxplotais kainų už 1 kv pasiskirstymą nuo kambarių skaičiaus.
-#Pavaizduokiet tokią informaciją: atrinktų butų kainų pasiskirstymą tarp miestų.
-#pavaizduokite tokią informaciją - kiek buvo sklebimų per skirtingus miestus jūsų atrankoje?
+dfVisiSkelbimai = pd.DataFrame(data={'Adresas':Adresas, 'Kaina':Kaina, 'Kaina_uz_m2':Kaina_uz_m2, 'Plotas':Plotas, 'Kambariu_skaicius':Kambariu_skaicius})
+dfVisiSkelbimai.to_csv('uzduotisnuo2iki11.csv', sep=';')
